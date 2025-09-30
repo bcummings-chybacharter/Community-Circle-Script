@@ -32,7 +32,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Left Column: Input Form -->
-            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-lg">
+            <div class="lg-col-span-1 bg-white p-6 rounded-lg shadow-lg">
                 <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-2">Script Options</h2>
                 
                 <div class="space-y-6">
@@ -50,8 +50,8 @@
                     <div>
                         <label for="topicType" class="block text-sm font-medium text-gray-600 mb-1">Topic Type</label>
                         <select id="topicType" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="casel">CASEL Theme</option>
-                            <option value="issue">Current Issue</option>
+                            <option value="casel">Proactive (CASEL Theme)</option>
+                            <option value="issue">Reactive (Current Issue)</option>
                         </select>
                     </div>
 
@@ -220,8 +220,8 @@
                     }
                     script += generateCaselScript(theme, announcement);
                 } else {
-                    const issue = document.getElementById('currentIssue').value;
-                    const outcome = document.getElementById('desiredOutcome').value;
+                    const issue = document.getElementById('currentIssue').value || "[Specify Issue]";
+                    const outcome = document.getElementById('desiredOutcome').value || "[Specify Outcome]";
                     script += generateIssueScript(issue, outcome, announcement);
                 }
                 fullScript += script;
@@ -242,6 +242,7 @@
             return '';
         }
 
+        // --- PROACTIVE (CASEL) SCRIPT GENERATOR ---
         function generateCaselScript(theme, announcement) {
             const announcementHtml = createAnnouncementHtml(announcement);
             const isCustomTheme = !caselQuotes.hasOwnProperty(theme);
@@ -265,74 +266,84 @@
             return `
                 <h4 class="font-bold mt-4">Morning Circle (20 Minutes)</h4>
                 ${announcementHtml}
-                <p><strong>Reminder:</strong> Phones away, please.</p>
-                <p><strong>Theme Definition:</strong> ${definition}</p>
-                <br>
-                <p><strong>Opening & Quote-of-the-Day (3 min):</strong></p>
-                <p class="pl-4 italic">“Good morning. Phones away, listen when others are talking, and please stay seated in the circle until we finish. We’ll pass the talking stick so everyone gets a turn. Today’s quote is: ‘${quote}’”</p>
+                <p><strong>1. Opening (3-5 min):</strong></p>
+                <p class="pl-4 italic">“Good morning. Phones away, listen when others are talking, and please stay seated in the circle until we finish. We’ll pass the talking stick so everyone gets a turn.”</p>
+                <p class="pl-4 mt-2"><strong>Theme Definition:</strong> ${definition}</p>
+                <p class="pl-4 mt-2"><strong>Today’s quote is:</strong> ‘${quote}’</p>
                 <p class="pl-4"><strong>Go-Round Question:</strong> “What do you think this quote means in your own words?”</p>
                 <br>
-                <p><strong>Quick Warm-Up (2 min):</strong></p>
+                <p><strong>2. Quick Warm-Up (2-3 min):</strong></p>
                 <p class="pl-4">“${warmUpQuestion}”</p>
                 <br>
-                <p><strong>Quick Reminders + Hopeful Credits Message (3 min):</strong></p>
+                <p><strong>3. Reminders + Hopeful Credits Message (3-4 min):</strong></p>
                 <p class="pl-4 italic">“Bathrooms are still on our second-chance system — one upstairs for girls, one downstairs for boys, staff nearby. Anytime you leave class, you must have a pink hall pass. We’re just weeks from the end of the block. Aim for at least one Edgenuity class finished and another 5 credits from rotations. But if you’re not there yet, don’t give up. You can still make huge progress before the block ends. All staff are here to help — just ask.”</p>
                 <p class="pl-4"><strong>Go-round:</strong> “What’s one thing you’d like help with to reach your credits or goals?”</p>
                 <br>
-                <p><strong>Main Theme — ${theme} (8–9 min):</strong> Pick two questions.</p>
+                <p><strong>4. Main Theme — ${theme} (8-10 min):</strong> Pick two questions.</p>
                 <ul class="list-disc pl-8">
                     <li>“${mainQuestion1}”</li>
                     <li>“${mainQuestion2}”</li>
                     <li>“How can practicing ${theme.toLowerCase()} help you at school or at home?”</li>
                 </ul>
                 <br>
-                <p><strong>Closing Gratitude Go-Round (2 min):</strong></p>
-                <p class="pl-4">“Everyone shares one thing they’re grateful for today.”</p>
+                <p><strong>5. Closing (2 min):</strong></p>
+                <p class="pl-4"><strong>Gratitude Go-Round:</strong> “Everyone shares one thing they’re grateful for today.”</p>
                 <hr class="my-6">
                 <h4 class="font-bold">Afternoon Circle (15 Minutes)</h4>
-                <p><strong>Warm-up:</strong> “What’s one good thing that happened today?”</p>
+                <p><strong>1. Opening / Warm-up (2-3 min):</strong> “What’s one good thing that happened today?”</p>
                 <br>
-                <p><strong>Check-In:</strong> “Let's check in on our theme of ${theme}. How did you see it in action today?”</p>
+                <p><strong>2. Check-In on Theme (3-5 min):</strong> “Let's check in on our theme of ${theme}. How did you see it in action today?”</p>
                 <br>
-                <p><strong>Closing:</strong> “One gratitude or shout-out for someone in your circle.”</p>
+                <p><strong>3. Follow-Up & Updates (2-4 min):</strong></p>
+                <p class="pl-4 italic">[Facilitator: Add any updates here from YPC, bathroom plan, or other school business.]</p>
                 <br>
-                <p><strong>Closing Statement:</strong></p>
-                <p class="pl-4 italic">“Thank you for your energy and focus today. Let's carry this positive momentum into tomorrow.”</p>
+                <p><strong>4. Logistics/Room Reset (3-4 min):</strong></p>
+                <p class="pl-4 italic">“Part of ending the day strong is taking care of our space. Before we close, let's make sure your area is clean, your chair is pushed in, and your Chromebook is plugged in.”</p>
+                <br>
+                <p><strong>5. Closing (2-3 min):</strong> “One gratitude or shout-out for someone in your circle.”</p>
             `;
         }
 
+        // --- REACTIVE (CURRENT ISSUE) SCRIPT GENERATOR ---
         function generateIssueScript(issue, outcome, announcement) {
             const announcementHtml = createAnnouncementHtml(announcement);
             return `
                 <h4 class="font-bold mt-4">Morning Circle (20 Minutes)</h4>
                 ${announcementHtml}
-                <p><strong>Opening (read aloud or share in your own words):</strong></p>
-                <p class="pl-4 italic">“Good morning. Today we need to talk about a serious issue: ${issue}. This is affecting our school community and it's important we address it together. We believe that as a community, we can achieve our goal of '${outcome}'. CHYBA was created to be a safe place, and that vision has not changed. Each of us must choose if we want to be part of that vision.”</p>
+                <p><strong>1. Opening (3-5 min):</strong></p>
+                <p class="pl-4 italic">“Good morning. Today we need to talk about a serious issue: **${issue}**. This is affecting our school community and it's important we address it together. Our goal is to ensure that **'${outcome}'**. CHYBA was created to be a safe place, and that vision has not changed. Each of us must choose if we want to be part of that vision.”</p>
+                <p class="pl-4 mt-2"><strong>Go-Round Question:</strong> “How does this issue make you feel? (Use the talking stick, one person speaks at a time)”</p>
                 <br>
-                <p><strong>Talking Stick Go-Round (5 min):</strong></p>
-                <p class="pl-4">“How does this issue make you feel? (Use the talking stick, one person speaks at a time)”</p>
+                <p><strong>2. Quick Warm-Up / Check-In (2-3 min):</strong></p>
+                <p class="pl-4">"What’s one positive interaction you’ve seen or had this morning?”</p>
                 <br>
-                <p><strong>Main Theme — Problem-Solving (10 min):</strong> Pick two or three questions.</p>
+                <p><strong>3. Reminders + Hopeful Message (3-4 min):</strong></p>
+                <p class="pl-4 italic">“Even when we have tough things to talk about, our school goals continue. Bathrooms are still on our second-chance system, and you must have a pink hall pass to leave class. We're here to support your academic goals. The best way to make our school better is to focus on your own success.”</p>
+                <p class="pl-4"><strong>Go-round:</strong> “What’s one thing you can focus on today to make progress?”</p>
+                <br>
+                <p><strong>4. Main Theme — Problem-Solving (8-10 min):</strong> Pick two or three questions.</p>
                 <ul class="list-disc pl-8">
                     <li>“What is one reason this issue might be happening?”</li>
-                    <li>“What is one positive change we could make to address this?”</li>
-                    <li>“How would that change help students or staff feel safer and more respected?”</li>
+                    <li>“What’s one positive change we could make to address this?”</li>
+                    <li>“How would that change help students and staff feel safer and more respected?”</li>
                     <li>“What’s one small step you could personally take to help achieve our desired outcome?”</li>
-                    <li>“Who could you partner with to make that idea happen?”</li>
                 </ul>
                 <br>
-                <p><strong>Closing Commitment (2 min):</strong></p>
-                <p class="pl-4">“What's one thing you will commit to doing today to help us achieve '${outcome}'?”</p>
+                <p><strong>5. Closing (2 min):</strong></p>
+                <p class="pl-4"><strong>Commitment Go-Round:</strong> “What's one thing you will commit to doing today to help us achieve '${outcome}'?”</p>
                 <hr class="my-6">
                  <h4 class="font-bold">Afternoon Circle (15 Minutes)</h4>
-                <p><strong>Warm-up:</strong> “What’s one positive interaction you had or saw today?”</p>
+                <p><strong>1. Opening / Warm-up (2-3 min):</strong> “What’s one positive interaction you had or saw today?”</p>
                 <br>
-                <p><strong>Check-In:</strong> “Let's check back in on our conversation from this morning about ${issue}. Did you see anyone (including yourself) take a step towards our goal of '${outcome}'?”</p>
+                <p><strong>2. Check-In on Issue (3-5 min):</strong> “Let's check back in on our conversation from this morning about ${issue}. Did you see anyone (including yourself) take a step towards our goal of '${outcome}'?”</p>
                 <br>
-                <p><strong>Closing:</strong> “One gratitude or shout-out for someone who helped make CHYBA a better place today.”</p>
+                <p><strong>3. Follow-Up & Updates (2-4 min):</strong></p>
+                <p class="pl-4 italic">[Facilitator: Add any updates here from YPC, bathroom plan, or other school business. Record student suggestions to follow up on later.]</p>
                 <br>
-                 <p><strong>Closing Statement:</strong></p>
-                <p class="pl-4 italic">“Thank you for your honesty and commitment today. Every positive choice makes a difference. Let's continue to work together to make this a safe and kind place for everyone.”</p>
+                <p><strong>4. Logistics/Room Reset (3-4 min):</strong></p>
+                <p class="pl-4 italic">“Part of being responsible is taking care of our shared space. Before we close, let's reset our room: clean your area, push in your chair, and plug in your Chromebook.”</p>
+                <br>
+                <p><strong>5. Closing (2-3 min):</strong> “One shout-out for someone who helped make CHYBA a better place today.”</p>
             `;
         }
         
@@ -340,7 +351,6 @@
 
         copyScriptBtn.addEventListener('click', () => {
             const scriptText = scriptOutput.innerText;
-            // A small hack to use the deprecated execCommand for iframe compatibility
             const textArea = document.createElement('textarea');
             textArea.value = scriptText;
             document.body.appendChild(textArea);
@@ -359,10 +369,9 @@
         
         sendEmailBtn.addEventListener('click', () => {
             const subject = "Community Circle Script";
-            const body = scriptOutput.innerText; // Use innerText to preserve line breaks better
+            const body = scriptOutput.innerText;
             const recipient = "chyba-staff@googlegroups.com";
             
-            // This will open the user's default mail client.
             window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         });
 
