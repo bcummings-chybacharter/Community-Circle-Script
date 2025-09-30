@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHYBA Community Circle Script Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .themed-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .themed-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .themed-scrollbar::-webkit-scrollbar-thumb {
+            background: #4a5568;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-700">CHYBA Charter School</h1>
+            <p class="text-xl sm:text-2xl text-indigo-600 font-semibold">Community Circle Script Generator</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Input Form -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-2xl font-bold mb-6 text-gray-700 border-b pb-2">Create Your Script</h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label for="numDays" class="block text-sm font-medium text-gray-600 mb-1">Number of Days</label>
+                        <select id="numDays" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="1">1 Day</option>
+                            <option value="2">2 Days</option>
+                            <option value="3">3 Days</option>
+                            <option value="4">4 Days</option>
+                            <option value="5">5 Days (Mon-Fri)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="topicType" class="block text-sm font-medium text-gray-600 mb-1">Topic Type</label>
+                        <select id="topicType" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option value="casel">CASEL Theme</option>
+                            <option value="issue">Current Issue</option>
+                        </select>
+                    </div>
+
+                    <div id="caselThemeSection">
+                        <label for="caselTheme" class="block text-sm font-medium text-gray-600 mb-1">CASEL5 Theme</label>
+                        <select id="caselTheme" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                            <option>Self-Awareness</option>
+                            <option>Self-Management</option>
+                            <option>Social Awareness</option>
+                            <option>Relationship Skills</option>
+                            <option>Responsible Decision-Making</option>
+                        </select>
+                    </div>
+
+                    <div id="currentIssueSection" class="hidden">
+                        <div>
+                            <label for="currentIssue" class="block text-sm font-medium text-gray-600 mb-1">Current Issue</label>
+                            <input type="text" id="currentIssue" placeholder="e.g., Increase in fights" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                        <div class="mt-4">
+                            <label for="desiredOutcome" class="block text-sm font-medium text-gray-600 mb-1">Desired Outcome</label>
+                            <input type="text" id="desiredOutcome" placeholder="e.g., Students choose peace and kindness" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
+                    </div>
+                    
+                    <button id="generateScriptBtn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                        Generate Script
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Generated Script -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-lg">
+                <div class="flex justify-between items-center border-b pb-2 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-700">Generated Script</h2>
+                    <div>
+                        <button id="copyScriptBtn" class="bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-md hover:bg-gray-300 transition duration-300 ease-in-out mr-2">Copy</button>
+                        <button id="sendEmailBtn" class="bg-green-500 text-white font-bold py-2 px-4 rounded-md hover:bg-green-600 transition duration-300 ease-in-out">Send to Google Group</button>
+                    </div>
+                </div>
+                <div id="scriptOutput" class="prose max-w-none h-96 overflow-y-auto p-4 border rounded-md bg-gray-50 themed-scrollbar">
+                    <p class="text-gray-500">Your generated community circle script will appear here. Configure the options on the left and click "Generate Script".</p>
+                </div>
+                 <div id="copy-message" class="text-green-600 text-sm mt-2 font-medium hidden">Copied to clipboard!</div>
+            </div>
+        </div>
+        
+        <!-- Contextual Info Section -->
+        <div class="mt-8 bg-white p-6 rounded-lg shadow-lg">
+            <h3 class="text-xl font-bold text-gray-700 mb-4">Contextual Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm">
+                <div class="bg-indigo-50 p-4 rounded-md">
+                    <h4 class="font-semibold text-indigo-800">School Profile</h4>
+                    <p><span class="font-medium">Name:</span> CHYBA Charter School</p>
+                    <p><span class="font-medium">Focus:</span> Providing a safe, alternative learning environment.</p>
+                    <p><span class="font-medium">Vision:</span> A peaceful place for students who want something different from large high schools.</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-md">
+                    <h4 class="font-semibold text-green-800">Student Profile</h4>
+                    <p>Students seeking a smaller, more supportive school community. Many are working to overcome challenges and get back on track with their credits.</p>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-md">
+                    <h4 class="font-semibold text-yellow-800">Circle Format</h4>
+                     <p><span class="font-medium">Morning:</span> 20 minutes</p>
+                    <p><span class="font-medium">Afternoon:</span> 15 minutes</p>
+                    <p><span class="font-medium">Key Elements:</span> Opening, Quote, Go-Round, Warm-Up, Reminders, Main Theme, Closing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const topicTypeSelect = document.getElementById('topicType');
+        const caselThemeSection = document.getElementById('caselThemeSection');
+        const currentIssueSection = document.getElementById('currentIssueSection');
+        const generateScriptBtn = document.getElementById('generateScriptBtn');
+        const scriptOutput = document.getElementById('scriptOutput');
+        const copyScriptBtn = document.getElementById('copyScriptBtn');
+        const sendEmailBtn = document.getElementById('sendEmailBtn');
+        const copyMessage = document.getElementById('copy-message');
+
+
+        topicTypeSelect.addEventListener('change', () => {
+            if (topicTypeSelect.value === 'casel') {
+                caselThemeSection.classList.remove('hidden');
+                currentIssueSection.classList.add('hidden');
+            } else {
+                caselThemeSection.classList.add('hidden');
+                currentIssueSection.classList.remove('hidden');
+            }
+        });
+
+        const funQuestions = {
+            'Self-Awareness': [
+                "If you could have one animal trait (speed of a cheetah, eyesight of an eagle, etc.), what would it be?",
+                "What song best matches your mood today?",
+                "If your brain had a “battery level” right now, what % would it be?",
+                "What’s one thing you’re proud of yourself for recently?",
+                "If you were a color today, what color would you be and why?",
+            ],
+            'Self-Management': [
+                "What’s one thing that helps you stay calm when stressed?",
+                "If you could press a “focus” button, what would you use it for?",
+                "What’s one small habit that helps you get things done?",
+                "What’s harder for you: starting something or finishing it?",
+                "If you had a “motivation coach” living in your head, what would they say?",
+            ],
+            'Social Awareness': [
+                "What’s one quality you admire in other people?",
+                "If kindness were a superpower, how would you use it?",
+                "What’s one way you’ve seen someone help out a classmate recently?",
+                "If you could instantly understand another culture, which would you choose?",
+                "When’s a time someone made you feel included?",
+            ],
+            'Relationship Skills': [
+                "Who do you usually turn to for advice?",
+                "If you could bring one fictional character to school as your partner, who would it be?",
+                "What’s one trait you look for in a friend?",
+                "How do you usually resolve disagreements with people?",
+                "What’s one fun memory you’ve had with classmates here or other friends?",
+            ],
+            'Responsible Decision-Making': [
+                "What’s one good decision you’ve made this week?",
+                "If you could give your past self one piece of advice, what would it be?",
+                "What’s a time you had to choose between something fun and something important?",
+                "Who is someone you can count on to give you good advice?",
+                "What’s one way you can make a positive impact at school today?",
+            ]
+        };
+
+        const caselQuotes = {
+            'Self-Awareness': "“Be yourself; everyone else is already taken.” — Oscar Wilde",
+            'Self-Management': "“You can’t stop the waves, but you can learn to surf.” — Jon Kabat-Zinn",
+            'Social Awareness': "“Kindness is a language which the deaf can hear and the blind can see.” — Mark Twain",
+            'Relationship Skills': "“The only way to have a friend is to be one.” — Ralph Waldo Emerson",
+            'Responsible Decision-Making': "“It is our choices that show what we truly are, far more than our abilities.” — J.K. Rowling"
+        };
+        
+        const caselDefinitions = {
+            'Self-Awareness': "Self-awareness is the ability to understand your own emotions, thoughts, and values, and how they influence your behavior.",
+            'Self-Management': "Self-management is the ability to manage your emotions, thoughts, and behaviors in different situations to achieve goals and aspirations.",
+            'Social Awareness': "Social awareness is the ability to take the perspective of and empathize with others, including those from diverse backgrounds and cultures.",
+            'Relationship Skills': "Relationship skills are the abilities to establish and maintain healthy and supportive relationships and to effectively navigate settings with diverse individuals and groups.",
+            'Responsible Decision-Making': "Responsible decision-making is the ability to make caring and constructive choices about personal behavior and social interactions across diverse situations."
+        };
+
+
+        function getRandomItem(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function generateScript() {
+            const numDays = parseInt(document.getElementById('numDays').value);
+            const topicType = document.getElementById('topicType').value;
+            let fullScript = '';
+            const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+            for (let i = 0; i < numDays; i++) {
+                const day = daysOfWeek[i] || `Day ${i + 1}`;
+                let script = `<div class="mb-8 p-4 border-l-4 border-indigo-500 bg-indigo-50 rounded-r-lg">
+                                <h3 class="text-xl font-bold text-indigo-700">${day.toUpperCase()}</h3>
+                              </div>`;
+
+                if (topicType === 'casel') {
+                    const theme = document.getElementById('caselTheme').value;
+                    script += generateCaselScript(theme);
+                } else {
+                    const issue = document.getElementById('currentIssue').value;
+                    const outcome = document.getElementById('desiredOutcome').value;
+                    script += generateIssueScript(issue, outcome);
+                }
+                fullScript += script;
+            }
+
+            scriptOutput.innerHTML = fullScript;
+        }
+
+        function generateCaselScript(theme) {
+            const quote = caselQuotes[theme];
+            const definition = caselDefinitions[theme];
+            const warmUpQuestion = getRandomItem(funQuestions[theme]);
+            const mainQuestion1 = getRandomItem(funQuestions[theme].filter(q => q !== warmUpQuestion));
+            const mainQuestion2 = getRandomItem(funQuestions[theme].filter(q => q !== warmUpQuestion && q !== mainQuestion1));
+
+
+            return `
+                <h4 class="font-bold mt-4">Morning Circle (20 Minutes)</h4>
+                <p><strong>Reminder:</strong> Phones away, please.</p>
+                <p><strong>CASEL Definition:</strong> ${definition}</p>
+                <br>
+                <p><strong>Opening & Quote-of-the-Day (3 min):</strong></p>
+                <p class="pl-4 italic">“Good morning. Phones away, listen when others are talking, and please stay seated in the circle until we finish. We’ll pass the talking stick so everyone gets a turn. Today’s quote is: ‘${quote}’”</p>
+                <p class="pl-4"><strong>Go-Round Question:</strong> “What do you think this quote means in your own words?”</p>
+                <br>
+                <p><strong>Quick Warm-Up (2 min):</strong></p>
+                <p class="pl-4">“${warmUpQuestion}”</p>
+                <br>
+                <p><strong>Quick Reminders + Hopeful Credits Message (3 min):</strong></p>
+                <p class="pl-4 italic">“Bathrooms are still on our second-chance system — one upstairs for girls, one downstairs for boys, staff nearby. Anytime you leave class, you must have a pink hall pass. We’re just weeks from the end of the block. Aim for at least one Edgenuity class finished and another 5 credits from rotations. But if you’re not there yet, don’t give up. You can still make huge progress before the block ends. All staff are here to help — just ask.”</p>
+                <p class="pl-4"><strong>Go-round:</strong> “What’s one thing you’d like help with to reach your credits or goals?”</p>
+                <br>
+                <p><strong>Main Theme — ${theme} (8–9 min):</strong> Pick two questions.</p>
+                <ul class="list-disc pl-8">
+                    <li>“${mainQuestion1}”</li>
+                    <li>“${mainQuestion2}”</li>
+                    <li>“How can practicing ${theme.toLowerCase()} help you at school or at home?”</li>
+                </ul>
+                <br>
+                <p><strong>Closing Gratitude Go-Round (2 min):</strong></p>
+                <p class="pl-4">“Everyone shares one thing they’re grateful for today.”</p>
+                <hr class="my-6">
+                <h4 class="font-bold">Afternoon Circle (15 Minutes)</h4>
+                <p><strong>Warm-up:</strong> “What’s one good thing that happened today?”</p>
+                <br>
+                <p><strong>Check-In:</strong> “Let's check in on our theme of ${theme}. How did you see it in action today?”</p>
+                <br>
+                <p><strong>Closing:</strong> “One gratitude or shout-out for someone in your circle.”</p>
+                <br>
+                <p><strong>Closing Statement:</strong></p>
+                <p class="pl-4 italic">“Thank you for your energy and focus today. Let's carry this positive momentum into tomorrow.”</p>
+            `;
+        }
+
+        function generateIssueScript(issue, outcome) {
+            return `
+                <h4 class="font-bold mt-4">Morning Circle (20 Minutes)</h4>
+                <p><strong>Opening (read aloud or share in your own words):</strong></p>
+                <p class="pl-4 italic">“Good morning. Today we need to talk about a serious issue: ${issue}. This is affecting our school community and it's important we address it together. We believe that as a community, we can achieve our goal of '${outcome}'. CHYBA was created to be a safe place, and that vision has not changed. Each of us must choose if we want to be part of that vision.”</p>
+                <br>
+                <p><strong>Talking Stick Go-Round (5 min):</strong></p>
+                <p class="pl-4">“How does this issue make you feel? (Use the talking stick, one person speaks at a time)”</p>
+                <br>
+                <p><strong>Main Theme — Problem-Solving (10 min):</strong> Pick two or three questions.</p>
+                <ul class="list-disc pl-8">
+                    <li>“What is one reason this issue might be happening?”</li>
+                    <li>“What is one positive change we could make to address this?”</li>
+                    <li>“How would that change help students or staff feel safer and more respected?”</li>
+                    <li>“What’s one small step you could personally take to help achieve our desired outcome?”</li>
+                    <li>“Who could you partner with to make that idea happen?”</li>
+                </ul>
+                <br>
+                <p><strong>Closing Commitment (2 min):</strong></p>
+                <p class="pl-4">“What's one thing you will commit to doing today to help us achieve '${outcome}'?”</p>
+                <hr class="my-6">
+                 <h4 class="font-bold">Afternoon Circle (15 Minutes)</h4>
+                <p><strong>Warm-up:</strong> “What’s one positive interaction you had or saw today?”</p>
+                <br>
+                <p><strong>Check-In:</strong> “Let's check back in on our conversation from this morning about ${issue}. Did you see anyone (including yourself) take a step towards our goal of '${outcome}'?”</p>
+                <br>
+                <p><strong>Closing:</strong> “One gratitude or shout-out for someone who helped make CHYBA a better place today.”</p>
+                <br>
+                 <p><strong>Closing Statement:</strong></p>
+                <p class="pl-4 italic">“Thank you for your honesty and commitment today. Every positive choice makes a difference. Let's continue to work together to make this a safe and kind place for everyone.”</p>
+            `;
+        }
+        
+        generateScriptBtn.addEventListener('click', generateScript);
+
+        copyScriptBtn.addEventListener('click', () => {
+            const scriptText = scriptOutput.innerText;
+            // A small hack to use the deprecated execCommand for iframe compatibility
+            const textArea = document.createElement('textarea');
+            textArea.value = scriptText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                copyMessage.classList.remove('hidden');
+                setTimeout(() => {
+                    copyMessage.classList.add('hidden');
+                }, 2000);
+            } catch (err) {
+                console.error('Fallback: Oops, unable to copy', err);
+            }
+            document.body.removeChild(textArea);
+        });
+        
+        sendEmailBtn.addEventListener('click', () => {
+            const subject = "Community Circle Script";
+            const body = scriptOutput.innerText.replace(/\n/g, '%0A');
+            // Assuming a google group email - replace with the actual one.
+            const recipient = "chyba-staff@googlegroups.com";
+            
+            // This will open the user's default mail client.
+            window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        });
+
+        // Initial generation
+        generateScript();
+
+    </script>
+</body>
+</html>
