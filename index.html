@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>CHYBA Community Circle Script Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -82,6 +82,11 @@
                         </div>
                     </div>
                     
+                    <div>
+                        <label for="generalAnnouncement" class="block text-sm font-medium text-gray-600 mb-1">General Announcement (Optional)</label>
+                        <textarea id="generalAnnouncement" rows="3" placeholder="e.g., Picture day is this Friday. Please remember to bring your forms." class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    </div>
+
                     <button id="generateScriptBtn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
                         Generate Script
                     </button>
@@ -198,6 +203,7 @@
         function generateScript() {
             const numDays = parseInt(document.getElementById('numDays').value);
             const topicType = document.getElementById('topicType').value;
+            const announcement = document.getElementById('generalAnnouncement').value.trim();
             let fullScript = '';
             const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 
@@ -212,11 +218,11 @@
                     if (theme === 'custom') {
                         theme = document.getElementById('customCaselTheme').value.trim() || "Your Custom Theme";
                     }
-                    script += generateCaselScript(theme);
+                    script += generateCaselScript(theme, announcement);
                 } else {
                     const issue = document.getElementById('currentIssue').value;
                     const outcome = document.getElementById('desiredOutcome').value;
-                    script += generateIssueScript(issue, outcome);
+                    script += generateIssueScript(issue, outcome, announcement);
                 }
                 fullScript += script;
             }
@@ -224,7 +230,20 @@
             scriptOutput.innerHTML = fullScript;
         }
 
-        function generateCaselScript(theme) {
+        function createAnnouncementHtml(announcement) {
+            if (announcement) {
+                return `
+                    <div class="mb-4 p-3 bg-yellow-100 border-l-4 border-yellow-500 rounded-r-lg">
+                        <h4 class="font-bold text-yellow-800">General Announcement</h4>
+                        <p class="text-yellow-700 italic">${announcement.replace(/\n/g, '<br>')}</p>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
+        function generateCaselScript(theme, announcement) {
+            const announcementHtml = createAnnouncementHtml(announcement);
             const isCustomTheme = !caselQuotes.hasOwnProperty(theme);
 
             const quote = isCustomTheme ? "[Enter a relevant quote for this theme]" : caselQuotes[theme];
@@ -243,9 +262,9 @@
                 mainQuestion2 = getRandomItem(themeQuestions.filter(q => q !== warmUpQuestion && q !== mainQuestion1)) || `How can practicing ${theme.toLowerCase()} help you at school or at home?`;
             }
 
-
             return `
                 <h4 class="font-bold mt-4">Morning Circle (20 Minutes)</h4>
+                ${announcementHtml}
                 <p><strong>Reminder:</strong> Phones away, please.</p>
                 <p><strong>Theme Definition:</strong> ${definition}</p>
                 <br>
@@ -282,9 +301,11 @@
             `;
         }
 
-        function generateIssueScript(issue, outcome) {
+        function generateIssueScript(issue, outcome, announcement) {
+            const announcementHtml = createAnnouncementHtml(announcement);
             return `
                 <h4 class="font-bold mt-4">Morning Circle (20 Minutes)</h4>
+                ${announcementHtml}
                 <p><strong>Opening (read aloud or share in your own words):</strong></p>
                 <p class="pl-4 italic">“Good morning. Today we need to talk about a serious issue: ${issue}. This is affecting our school community and it's important we address it together. We believe that as a community, we can achieve our goal of '${outcome}'. CHYBA was created to be a safe place, and that vision has not changed. Each of us must choose if we want to be part of that vision.”</p>
                 <br>
