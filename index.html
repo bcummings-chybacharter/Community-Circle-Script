@@ -63,7 +63,12 @@
                             <option>Social Awareness</option>
                             <option>Relationship Skills</option>
                             <option>Responsible Decision-Making</option>
+                            <option value="custom">Other (Enter Your Own)</option>
                         </select>
+                        <div id="customCaselThemeSection" class="hidden mt-4">
+                            <label for="customCaselTheme" class="block text-sm font-medium text-gray-600 mb-1">Custom CASEL Theme</label>
+                            <input type="text" id="customCaselTheme" placeholder="e.g., Growth Mindset" class="w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        </div>
                     </div>
 
                     <div id="currentIssueSection" class="hidden">
@@ -132,7 +137,8 @@
         const copyScriptBtn = document.getElementById('copyScriptBtn');
         const sendEmailBtn = document.getElementById('sendEmailBtn');
         const copyMessage = document.getElementById('copy-message');
-
+        const caselThemeSelect = document.getElementById('caselTheme');
+        const customCaselThemeSection = document.getElementById('customCaselThemeSection');
 
         topicTypeSelect.addEventListener('change', () => {
             if (topicTypeSelect.value === 'casel') {
@@ -141,6 +147,14 @@
             } else {
                 caselThemeSection.classList.add('hidden');
                 currentIssueSection.classList.remove('hidden');
+            }
+        });
+        
+        caselThemeSelect.addEventListener('change', () => {
+            if (caselThemeSelect.value === 'custom') {
+                customCaselThemeSection.classList.remove('hidden');
+            } else {
+                customCaselThemeSection.classList.add('hidden');
             }
         });
 
@@ -200,6 +214,7 @@
 
 
         function getRandomItem(arr) {
+            if (!arr || arr.length === 0) return "";
             return arr[Math.floor(Math.random() * arr.length)];
         }
 
@@ -216,7 +231,10 @@
                               </div>`;
 
                 if (topicType === 'casel') {
-                    const theme = document.getElementById('caselTheme').value;
+                    let theme = document.getElementById('caselTheme').value;
+                    if (theme === 'custom') {
+                        theme = document.getElementById('customCaselTheme').value.trim() || "Your Custom Theme";
+                    }
                     script += generateCaselScript(theme);
                 } else {
                     const issue = document.getElementById('currentIssue').value;
@@ -230,17 +248,29 @@
         }
 
         function generateCaselScript(theme) {
-            const quote = caselQuotes[theme];
-            const definition = caselDefinitions[theme];
-            const warmUpQuestion = getRandomItem(funQuestions[theme]);
-            const mainQuestion1 = getRandomItem(funQuestions[theme].filter(q => q !== warmUpQuestion));
-            const mainQuestion2 = getRandomItem(funQuestions[theme].filter(q => q !== warmUpQuestion && q !== mainQuestion1));
+            const isCustomTheme = !caselQuotes.hasOwnProperty(theme);
+
+            const quote = isCustomTheme ? "[Enter a relevant quote for this theme]" : caselQuotes[theme];
+            const definition = isCustomTheme ? `[Enter a definition for ${theme}]` : caselDefinitions[theme];
+            
+            let warmUpQuestion, mainQuestion1, mainQuestion2;
+
+            if (isCustomTheme) {
+                warmUpQuestion = "[Enter a fun warm-up question related to your theme]";
+                mainQuestion1 = `What does '${theme}' mean to you?`;
+                mainQuestion2 = `How can you practice '${theme}' at school this week?`;
+            } else {
+                const themeQuestions = funQuestions[theme];
+                warmUpQuestion = getRandomItem(themeQuestions);
+                mainQuestion1 = getRandomItem(themeQuestions.filter(q => q !== warmUpQuestion));
+                mainQuestion2 = getRandomItem(themeQuestions.filter(q => q !== warmUpQuestion && q !== mainQuestion1)) || `How can practicing ${theme.toLowerCase()} help you at school or at home?`;
+            }
 
 
             return `
                 <h4 class="font-bold mt-4">Morning Circle (20 Minutes)</h4>
                 <p><strong>Reminder:</strong> Phones away, please.</p>
-                <p><strong>CASEL Definition:</strong> ${definition}</p>
+                <p><strong>Theme Definition:</strong> ${definition}</p>
                 <br>
                 <p><strong>Opening & Quote-of-the-Day (3 min):</strong></p>
                 <p class="pl-4 italic">“Good morning. Phones away, listen when others are talking, and please stay seated in the circle until we finish. We’ll pass the talking stick so everyone gets a turn. Today’s quote is: ‘${quote}’”</p>
@@ -331,8 +361,7 @@
         
         sendEmailBtn.addEventListener('click', () => {
             const subject = "Community Circle Script";
-            const body = scriptOutput.innerText.replace(/\n/g, '%0A');
-            // Assuming a google group email - replace with the actual one.
+            const body = scriptOutput.innerText; // Use innerText to preserve line breaks better
             const recipient = "chyba-staff@googlegroups.com";
             
             // This will open the user's default mail client.
@@ -345,3 +374,4 @@
     </script>
 </body>
 </html>
+
